@@ -2815,6 +2815,7 @@ rpl_parallel::do_event(rpl_group_info *serial_rgi, Log_event *ev,
         new_gco= false;
         if (!(gtid_flags & Gtid_log_event::FL_TRANSACTIONAL) ||
             ( (!(gtid_flags & Gtid_log_event::FL_ALLOW_PARALLEL) ||
+            !rpl_global_gtid_slave_state->is_gtid_slave_pos_transactional ||
                (gtid_flags & Gtid_log_event::FL_WAITED)) &&
               (mode < SLAVE_PARALLEL_AGGRESSIVE)))
         {
