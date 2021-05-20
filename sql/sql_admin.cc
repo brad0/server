@@ -578,9 +578,7 @@ static bool mysql_admin_table(THD* thd, TABLE_LIST* tables,
     bool storage_engine_partitioned= 0;
     uchar tabledef_version_buff[MY_UUID_SIZE];
     const char *db= table->db.str;
-    bool fatal_error=0;
-    bool open_error;
-    bool collect_eis=  FALSE;
+    bool fatal_error= false, open_error= false, collect_eis= false;
     bool open_for_modify= org_open_for_modify;
 
     storage_engine_name[0]= 0;                  // Marker that's not used
