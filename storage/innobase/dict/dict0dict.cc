@@ -1109,7 +1109,7 @@ dict_table_open_on_name(
 	table = dict_sys.load_table({table_name, strlen(table_name)},
 				    ignore_err);
 
-	if (table != NULL) {
+	if (table) {
 		ut_ad(table->cached);
 
 		/* If table is encrypted or corrupted */

@@ -150,8 +150,8 @@ inline bool dict_table_t::is_stats_table() const
 
 bool trx_t::has_stats_table_lock() const
 {
-  for (const lock_t *lock : lock.table_locks)
-    if (lock && lock->un_member.tab_lock.table->is_stats_table())
+  for (const lock_t *l : lock.table_locks)
+    if (l && l->un_member.tab_lock.table->is_stats_table())
       return true;
   return false;
 }

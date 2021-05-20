@@ -1907,33 +1907,19 @@ dict_create_add_foreigns_to_dictionary(
 	const dict_table_t*	table,
 	trx_t*			trx)
 {
-	dict_foreign_t*	foreign;
-	dberr_t		error;
+  dict_sys.assert_locked();
 
-	dict_sys.assert_locked();
+  if (!dict_sys.sys_foreign)
+  {
+    sql_print_error("InnoDB: Table SYS_FOREIGN not found"
+                    " in internal data dictionary");
+    return DB_ERROR;
+  }
 
-	if (!dict_sys.sys_foreign) {
-		sql_print_error("InnoDB: Table SYS_FOREIGN not found"
-				" in internal data dictionary");
-		return(DB_ERROR);
-	}
+  for (auto fk : local_fk_set)
+    if (dberr_t error=
+        dict_create_add_foreign_to_dictionary(table->name.m_name, fk, trx))
+      return error;
 
-	error = DB_SUCCESS;
-
-	for (dict_foreign_set::const_iterator it = local_fk_set.begin();
-	     it != local_fk_set.end();
-	     ++it) {
-
-		foreign = *it;
-		ut_ad(foreign->id != NULL);
-
-		error = dict_create_add_foreign_to_dictionary(
-			table->name.m_name, foreign, trx);
-
-		if (error != DB_SUCCESS) {
-			break;
-		}
-	}
-
-	return error;
+  return DB_SUCCESS;
 }

@@ -64,17 +64,6 @@ static dict_table_t *dict_load_table_one(const span<const char> &name,
                                          dict_err_ignore_t ignore_err,
                                          dict_names_t &fk_tables);
 
-/** Load a table definition from a SYS_TABLES record to dict_table_t.
-Do not load any columns or indexes.
-@param[in]	name		Table name
-@param[in]	rec		SYS_TABLES record
-@param[out,own]	table		table, or nullptr
-@return	error message
-@retval	nullptr on success */
-const char *dict_load_table_low(const span<const char> &name,
-                                const rec_t *rec, dict_table_t **table)
-  MY_ATTRIBUTE((nonnull, warn_unused_result));
-
 /** Load an index definition from a SYS_INDEXES record to dict_index_t.
 If allocate=TRUE, we will create a dict_index_t structure and fill it
 accordingly. If allocated=FALSE, the dict_index_t will be supplied by
@@ -2994,7 +2983,8 @@ dict_load_foreigns(
 		if (ignore_err & DICT_ERR_IGNORE_FK_NOKEY) {
 			DBUG_RETURN(DB_SUCCESS);
 		}
-		ib::info() << "No foreign key system tables in the database";
+		sql_print_information("InnoDB: No foreign key system tables"
+				      " in the database");
 		DBUG_RETURN(DB_ERROR);
 	}
 
