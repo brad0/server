@@ -1466,7 +1466,7 @@ struct st_VioSSLFd *ssl_acceptor_fd;
 /**
   Number of currently active user connections.
 */
-Atomic_counter<uint> connection_count;
+static Atomic_counter<uint> connection_count;
 static Atomic_counter<uint> extra_connection_count;
 
 my_bool opt_gtid_strict_mode= FALSE;
@@ -8571,15 +8571,15 @@ static int get_options(int *argc_ptr, char ***argv_ptr)
     return 1;
 
 #ifdef EMBEDDED_LIBRARY
-  one_thread_scheduler(thread_scheduler);
-  one_thread_scheduler(extra_thread_scheduler);
+  one_thread_scheduler(thread_scheduler, &connection_count);
+  one_thread_scheduler(extra_thread_scheduler, &extra_connection_count);
 #else
 
   if (thread_handling <= SCHEDULER_ONE_THREAD_PER_CONNECTION)
     one_thread_per_connection_scheduler(thread_scheduler, &max_connections,
                                         &connection_count);
   else if (thread_handling == SCHEDULER_NO_THREADS)
-    one_thread_scheduler(thread_scheduler);
+    one_thread_scheduler(thread_scheduler, &connection_count);
   else
     pool_of_threads_scheduler(thread_scheduler,  &max_connections,
                                         &connection_count); 
