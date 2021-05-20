@@ -63,7 +63,7 @@ sub skip_combinations {
             unless ::have_mariabackup();
 
   $skip{'include/have_mariabackup.inc'} = 'Need socket statistics utility'
-            unless IS_WINDOWS || ::which("ss");
+            unless IS_WINDOWS || ! ::have_wsrep() || ::which("lsof") || ::which("sockstat") || ::which("ss");
 
   $skip{'include/have_mariabackup.inc'} = 'Need socat or nc'
             unless IS_WINDOWS || $ENV{MTR_GALERA_TFMT};
@@ -108,4 +108,3 @@ sub skip_combinations {
 }
 
 bless { };
-

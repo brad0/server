@@ -58,7 +58,7 @@ fi
 # word, it is arguably more secure than passing password on the command line.
 [ -n "$WSREP_SST_OPT_PSWD" ] && export MYSQL_PWD="$WSREP_SST_OPT_PSWD"
 
-STOP_WSREP="SET wsrep_on=OFF;"
+STOP_WSREP='SET wsrep_on=OFF;'
 
 # mysqldump cannot restore CSV tables, fix this issue
 CSV_TABLES_FIX="
@@ -135,29 +135,29 @@ MYSQLDUMP="$MYSQLDUMP $WSREP_SST_OPT_CONF $AUTH -S$WSREP_SST_OPT_SOCKET \
 --disable-keys --extended-insert --skip-lock-tables --quick --set-charset \
 --skip-comments --flush-privileges --all-databases --events"
 
-# need to disable logging when loading the dump
-# reason is that dump contains ALTER TABLE for log tables, and
-# this causes an error if logging is enabled
-GENERAL_LOG_OPT=`$MYSQL --skip-column-names -e "$STOP_WSREP SELECT @@GENERAL_LOG"`
-SLOW_LOG_OPT=`$MYSQL --skip-column-names -e "$STOP_WSREP SELECT @@SLOW_QUERY_LOG"`
-$MYSQL -e "$STOP_WSREP SET GLOBAL GENERAL_LOG=OFF"
-$MYSQL -e "$STOP_WSREP SET GLOBAL SLOW_QUERY_LOG=OFF"
-
-# commands to restore log settings
-RESTORE_GENERAL_LOG="SET GLOBAL GENERAL_LOG=$GENERAL_LOG_OPT;"
-RESTORE_SLOW_QUERY_LOG="SET GLOBAL SLOW_QUERY_LOG=$SLOW_LOG_OPT;"
-
 if [ $WSREP_SST_OPT_BYPASS -eq 0 ]
 then
-    (echo $STOP_WSREP && echo $RESET_MASTER && \
-     echo $SET_GTID_BINLOG_STATE && echo $SQL_LOG_BIN_OFF && \
-     echo $STOP_WSREP && $MYSQLDUMP && echo $CSV_TABLES_FIX && \
-     echo $RESTORE_GENERAL_LOG && echo $RESTORE_SLOW_QUERY_LOG && \
-     echo $SET_START_POSITION && echo $SET_WSREP_GTID_DOMAIN_ID \
+    # need to disable logging when loading the dump
+    # reason is that dump contains ALTER TABLE for log tables, and
+    # this causes an error if logging is enabled
+    GENERAL_LOG_OPT=`$MYSQL --skip-column-names -e "$STOP_WSREP SELECT @@GENERAL_LOG"`
+    SLOW_LOG_OPT=`$MYSQL --skip-column-names -e "$STOP_WSREP SELECT @@SLOW_QUERY_LOG"`
+
+    LOG_OFF="SET GLOBAL GENERAL_LOG=OFF; SET GLOBAL SLOW_QUERY_LOG=OFF;"
+
+    # commands to restore log settings
+    RESTORE_GENERAL_LOG="SET GLOBAL GENERAL_LOG=$GENERAL_LOG_OPT;"
+    RESTORE_SLOW_QUERY_LOG="SET GLOBAL SLOW_QUERY_LOG=$SLOW_LOG_OPT;"
+
+    (echo "$STOP_WSREP" && echo "$LOG_OFF" && echo "$RESET_MASTER" && \
+     echo "$SET_GTID_BINLOG_STATE" && echo "$SQL_LOG_BIN_OFF" && \
+     echo "$STOP_WSREP" && $MYSQLDUMP && echo "$CSV_TABLES_FIX" && \
+     echo "$RESTORE_GENERAL_LOG" && echo "$RESTORE_SLOW_QUERY_LOG" && \
+     echo "$SET_START_POSITION" && echo "$SET_WSREP_GTID_DOMAIN_ID" \
      || echo "SST failed to complete;") | $MYSQL
 else
     wsrep_log_info "Bypassing state dump."
-    echo $SET_START_POSITION | $MYSQL
+    echo "$SET_START_POSITION" | $MYSQL
 fi
 
 #
