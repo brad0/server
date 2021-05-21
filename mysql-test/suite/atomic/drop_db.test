@@ -8,6 +8,8 @@
 #
 
 call mtr.add_suppression("InnoDB: .* does not exist in the InnoDB internal");
+# Speed up wait_until_connected_again.inc
+let NO_WSREP=1;
 let $MYSQLD_DATADIR= `SELECT @@datadir`;
 
 let $engine_count=2;

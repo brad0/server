@@ -1,6 +1,8 @@
 --source include/have_debug.inc
 --source include/have_log_bin.inc
 --source include/not_valgrind.inc
+# Speed up wait_until_connected_again.inc
+let NO_WSREP=1;
 
 #
 # Testing of atomic DROP DATABASE when the generated query could be too long

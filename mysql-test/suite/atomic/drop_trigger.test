@@ -6,6 +6,8 @@
 # Testing of atomic drop with crashes in a lot of different places
 #
 
+# Speed up wait_until_connected_again.inc
+let NO_WSREP=1;
 let $MYSQLD_DATADIR= `SELECT @@datadir`;
 
 let long_comment=`select repeat('a',16384)`;

@@ -6,6 +6,8 @@
 # Testing of atomic drop of view with crashes in a lot of different places
 #
 
+# Speed up wait_until_connected_again.inc
+let NO_WSREP=1;
 let $MYSQLD_DATADIR= `SELECT @@datadir`;
 let $engine_count=1;
 let $engines='aria';

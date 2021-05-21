@@ -8,6 +8,8 @@
 
 --disable_query_log
 call mtr.add_suppression("InnoDB: .* does not exist in the InnoDB internal");
+# Speed up wait_until_connected_again.inc
+let NO_WSREP=1;
 --enable_query_log
 let $MYSQLD_DATADIR= `SELECT @@datadir`;
 

@@ -7,6 +7,8 @@
 #
 
 let $MYSQLD_DATADIR= `SELECT @@datadir`;
+# Speed up wait_until_connected_again.inc
+let NO_WSREP=1;
 
 let $engine_count=1;
 let $engines='aria';
