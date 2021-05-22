@@ -1,4 +1,3 @@
-
 /* Copyright(C) 2019 MariaDB
 
 This program is free software; you can redistribute itand /or modify
