@@ -259,10 +259,17 @@ then
         ;;
     'VERIFY_CA')
         VERIFY_OPT='verifyChain = yes'
-        if is_local_ip "$WSREP_SST_OPT_HOST_UNESCAPED"; then
-            CHECK_OPT='checkHost = localhost'
+        # check if the address is an ip-address (v4 or v6):
+        if echo "$WSREP_SST_OPT_HOST_UNESCAPED" | \
+           grep -q -E '^([0-9]+(\.[0-9]+){3,3}|[0-9a-fA-F]?(\:[0-9a-fA-F]*)+)$'
+        then
+            CHECK_OPT="checkIP = $WSREP_SST_OPT_HOST_UNESCAPED"
         else
-            CHECK_OPT='checkHost = $WSREP_SST_OPT_HOST_UNESCAPED'
+            CHECK_OPT="checkHost = $WSREP_SST_OPT_HOST"
+        fi
+        CHECK_OPT_LOCAL=""
+        if is_local_ip "$WSREP_SST_OPT_HOST_UNESCAPED"; then
+            CHECK_OPT_LOCAL="checkHost = localhost"
         fi
         ;;
     *)
@@ -310,6 +317,7 @@ connect = $WSREP_SST_OPT_HOST_UNESCAPED:$WSREP_SST_OPT_PORT
 TIMEOUTclose = 0
 ${VERIFY_OPT}
 ${CHECK_OPT}
+${CHECK_OPT_LOCAL}
 EOF
     fi
 
@@ -566,6 +574,9 @@ foreground = yes
 pid = $STUNNEL_PID
 debug = warning
 client = no
+${VERIFY_OPT}
+${CHECK_OPT}
+${CHECK_OPT_LOCAL}
 [rsync]
 accept = $STUNNEL_ACCEPT
 exec = $(command -v rsync)
@@ -583,6 +594,9 @@ foreground = yes
 pid = $STUNNEL_PID
 debug = warning
 client = no
+${VERIFY_OPT}
+${CHECK_OPT}
+${CHECK_OPT_LOCAL}
 [rsync]
 accept = $STUNNEL_ACCEPT
 exec = $SHELL
