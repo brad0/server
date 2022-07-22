@@ -6296,7 +6296,7 @@ static int write_locked_table_maps(THD *thd)
           table->file->has_transactions();
 
         int const error=
-            thd->binlog_write_table_map(table, has_trans, &with_annotate);
+          thd->binlog_write_table_map(table, has_trans, &with_annotate);
 
         /*
           If an error occurs, it is the responsibility of the caller to
